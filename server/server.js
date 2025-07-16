@@ -9,7 +9,7 @@ const issueRoutes = require("./routes/issueRoutes");
 
 dotenv.config();
 const app = express();
-const allowedOrigins = ["bug-board-y5x3.vercel.app"];
+const allowedOrigins = ["https://bug-board-y5x3.vercel.app"];
 
 const corsOptions = {
   origin: function (origin, callback) {
