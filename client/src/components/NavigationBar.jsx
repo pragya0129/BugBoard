@@ -36,7 +36,7 @@ const NavigationBar = ({ isAdmin, onCreateProjectClick }) => {
         <div className="flex flex-col p-4 md:p-1 space-y-4 md:flex-row md:items-center md:space-y-0 md:space-x-6 w-full">
           <div className="flex items-center gap-3">
             <img
-              src="../../public/images/bug.gif"
+              src="/images/bug.gif"
               alt="User Avatar"
               className="w-8 h-8 rounded-full object-cover"
             />
