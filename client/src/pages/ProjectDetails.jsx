@@ -4,7 +4,10 @@ import axios from "axios";
 import CreateIssueModal from "../components/CreateIssueModal";
 import NavigationBar from "../components/NavigationBar";
 import { useAuth } from "../context/AuthContext";
+import { PieChart } from "@mui/x-charts/PieChart";
 import AssignUsersModal from "../components/AssignUsersModal";
+import { LineChart } from "@mui/x-charts/LineChart";
+import { BarChart } from "@mui/x-charts/BarChart";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
@@ -14,6 +17,16 @@ const ProjectDetails = () => {
   const { user } = useAuth();
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [roleData, setRoleData] = useState([]);
+  const [trendData, setTrendData] = useState({
+    labels: [],
+    createdCounts: [],
+    resolvedCounts: [],
+  });
+  const [priorityData, setPriorityData] = useState({
+    labels: [],
+    values: [],
+  });
 
   const openAssignModal = (projectId) => {
     setSelectedProjectId(projectId);
@@ -50,7 +63,70 @@ const ProjectDetails = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setProject(projectRes.data);
+
+      const roleCounts = {};
+      projectRes.data.assignedUsers?.forEach((user) => {
+        roleCounts[user.role] = (roleCounts[user.role] || 0) + 1;
+      });
+      setRoleData(
+        Object.entries(roleCounts).map(([role, count], i) => ({
+          id: i,
+          value: count,
+          label: role,
+        }))
+      );
+
       setIssues(issueRes.data);
+
+      // Utility function to format date as YYYY-MM-DD
+      const formatDateKey = (dateStr) =>
+        new Date(dateStr).toISOString().split("T")[0];
+
+      const trendMap = {};
+
+      issueRes.data.forEach((issue) => {
+        const createdDate = formatDateKey(issue.createdAt);
+        trendMap[createdDate] = trendMap[createdDate] || {
+          created: 0,
+          resolved: 0,
+        };
+        trendMap[createdDate].created += 1;
+
+        if (issue.status === "resolved") {
+          const resolvedDate = formatDateKey(issue.updatedAt);
+          trendMap[resolvedDate] = trendMap[resolvedDate] || {
+            created: 0,
+            resolved: 0,
+          };
+          trendMap[resolvedDate].resolved += 1;
+        }
+      });
+
+      const sortedDates = Object.keys(trendMap).sort();
+      const createdCounts = sortedDates.map(
+        (date) => trendMap[date].created || 0
+      );
+      const resolvedCounts = sortedDates.map(
+        (date) => trendMap[date].resolved || 0
+      );
+
+      setTrendData({
+        labels: sortedDates,
+        createdCounts,
+        resolvedCounts,
+      });
+
+      const priorityMap = { high: 0, medium: 0, low: 0 };
+
+      issueRes.data.forEach((issue) => {
+        if (priorityMap.hasOwnProperty(issue.priority)) {
+          priorityMap[issue.priority]++;
+        }
+      });
+
+      const labels = Object.keys(priorityMap);
+      const values = Object.values(priorityMap);
+      setPriorityData({ labels, values });
     };
     fetchDetails();
   }, [projectId]);
@@ -163,11 +239,107 @@ const ProjectDetails = () => {
 
         <p className="text-gray-700 mb-6 text-base">{project.description}</p>
 
-        <img
+        <div className="mb-10">
+          <h3 className="text-xl font-semibold text-blue-700 mb-6 tracking-tight">
+            Dashboard Insights
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
+            {/* LEFT COLUMN - Line Chart */}
+            {trendData.labels.length > 0 && (
+              <div className="bg-white p-4 border border-gray-200 rounded-xl shadow-sm h-[49  0px] flex items-center justify-center">
+                <div className="w-full overflow-x-auto">
+                  <h4 className="text-md font-medium text-gray-800 mb-2 text-center">
+                    Issue Trends Over Time
+                  </h4>
+                  <LineChart
+                    width={350}
+                    height={400}
+                    series={[
+                      {
+                        data: trendData.createdCounts,
+                        label: "Created",
+                        color: "#1976d2",
+                      },
+                      {
+                        data: trendData.resolvedCounts,
+                        label: "Resolved",
+                        color: "#2e7d32",
+                      },
+                    ]}
+                    xAxis={[{ scaleType: "point", data: trendData.labels }]}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* RIGHT COLUMN - Stacked Charts */}
+            <div className="flex flex-col gap-4">
+              {/* Issue Summary */}
+              <div className="bg-white p-3 border border-gray-200 rounded-xl shadow-sm md:w-[350px] lg:h-[150px]">
+                <h4 className="text-sm font-medium text-gray-800 text-center mb-2">
+                  Issue Summary
+                </h4>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        { id: 0, value: openIssues.length, label: "Open" },
+                        {
+                          id: 1,
+                          value: closedIssues.length,
+                          label: "Resolved",
+                        },
+                      ],
+                    },
+                  ]}
+                  width={100}
+                  height={100}
+                />
+              </div>
+
+              {/* Role Distribution */}
+              {roleData.length > 0 && (
+                <div className="bg-white p-2 border border-gray-200 rounded-xl shadow-sm md:w-[350px] lg:h-[150px]">
+                  <h4 className="text-sm font-medium text-gray-800 text-center mb-2">
+                    User Role Distribution
+                  </h4>
+                  <PieChart
+                    series={[
+                      {
+                        data: roleData,
+                        innerRadius: 30,
+                      },
+                    ]}
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              )}
+
+              {/* Priority Bar Chart */}
+              {priorityData.labels.length > 0 && (
+                <div className="bg-white p-2 border border-gray-200 rounded-xl shadow-sm md:w-[350px] lg:h-[150px]">
+                  <h4 className="text-sm font-medium text-gray-800 text-center mb-2">
+                    Issues by Priority
+                  </h4>
+                  <BarChart
+                    width={200}
+                    height={120}
+                    xAxis={[{ scaleType: "band", data: priorityData.labels }]}
+                    series={[{ data: priorityData.values, color: "#1e88e5" }]}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* <img
           src="../../public/images/cooperation.gif"
           alt="placeholder"
           className="w-24 mb-6 rounded-lg"
-        />
+        /> */}
 
         {project.status !== "completed" &&
           (user?.role === "admin" ? (
@@ -190,32 +362,36 @@ const ProjectDetails = () => {
         <h3 className="text-xl font-semibold text-purple-700 mb-4 tracking-tight">
           Open Issues
         </h3>
-        <ul className="space-y-4 mb-10">
-          {openIssues.map((i) => (
-            <li
-              key={i._id}
-              className="bg-white p-5 border border-blue-100 rounded-2xl shadow-md hover:shadow-lg transition"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h4 className="font-semibold text-lg text-blue-800">
-                    {i.title}
-                  </h4>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Priority: <b>{i.priority}</b> | Created:{" "}
-                    {formatDate(i.createdAt)}
-                  </p>
+        {openIssues.length === 0 ? (
+          <p className="text-gray-500 mb-10">No open issues.</p>
+        ) : (
+          <ul className="space-y-4 mb-10">
+            {openIssues.map((i) => (
+              <li
+                key={i._id}
+                className="bg-white p-5 border border-blue-100 rounded-2xl shadow-md hover:shadow-lg transition"
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold text-lg text-blue-800">
+                      {i.title}
+                    </h4>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Priority: <b>{i.priority}</b> | Created:{" "}
+                      {formatDate(i.createdAt)}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleCloseIssue(i._id)}
+                    className="text-white bg-green-600 px-4 py-1.5 rounded-full hover:bg-green-700 text-sm transition font-medium shadow-sm"
+                  >
+                    Mark Resolved
+                  </button>
                 </div>
-                <button
-                  onClick={() => handleCloseIssue(i._id)}
-                  className="text-white bg-green-600 px-4 py-1.5 rounded-full hover:bg-green-700 text-sm transition font-medium shadow-sm"
-                >
-                  Mark Resolved
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        )}
 
         {/* Closed Issues */}
         <h3 className="text-xl font-semibold text-gray-800 mb-4 tracking-tight">
