@@ -56,9 +56,17 @@ const AdminDashboard = () => {
       <div className="p-6 max-w-6xl mx-auto">
         {/* In-Progress Projects */}
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-blue-800 mb-4 tracking-tight">
-            In-Progress Projects
-          </h2>
+          <div className="flex items-center mb-4 gap-3">
+            <img
+              src="images/checklist.gif"
+              alt="Project Icon"
+              className="h-8 w-8 object-contain"
+            />
+            <h3 className="text-2xl font-semibold text-blue-800 tracking-tight">
+              In-Progress Projects
+            </h3>
+          </div>
+
           {inProgressProjects.length === 0 ? (
             <p className="text-gray-500 italic">No in-progress projects.</p>
           ) : (
@@ -85,9 +93,16 @@ const AdminDashboard = () => {
 
         {/* Completed Projects */}
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-green-800 mb-4 tracking-tight">
-            Completed Projects
-          </h2>
+          <div className="flex items-center mb-4 gap-3">
+            <img
+              src="/images/like.gif"
+              alt="Project Icon"
+              className="h-8 w-8 object-contain"
+            />
+            <h3 className="text-2xl font-semibold text-green-800 tracking-tight">
+              Completed Projects
+            </h3>
+          </div>
           {completedProjects.length === 0 ? (
             <p className="text-gray-500 italic">No completed projects yet.</p>
           ) : (

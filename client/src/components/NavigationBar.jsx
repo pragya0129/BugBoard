@@ -42,15 +42,25 @@ const NavigationBar = ({ isAdmin, onCreateProjectClick }) => {
             {isAdmin && (
               <button
                 onClick={onCreateProjectClick}
-                className="bg-white text-blue-600 font-medium px-4 py-2 rounded-full shadow-sm hover:bg-gray-100 transition"
+                className="bg-white text-blue-600 font-medium px-4 py-2 rounded-full shadow-sm hover:bg-gray-100 transition flex items-center gap-2"
               >
-                + Create Project
+                <img
+                  src="/images/add-button.png"
+                  alt="Create"
+                  className="w-5 h-5 object-contain"
+                />
+                Create Project
               </button>
             )}
             <button
               onClick={handleLogout}
-              className="bg-[#FCD8DF] text-[#410002] font-medium px-4 py-2 rounded-full shadow-sm hover:shadow-md transition"
+              className="bg-[#FCD8DF] text-[#410002] font-medium px-4 py-2 rounded-full shadow-sm hover:shadow-md transition flex items-center gap-2"
             >
+              <img
+                src="/images/switch.png"
+                alt="Logout"
+                className="w-5 h-5 object-contain"
+              />
               Logout
             </button>
           </div>
