@@ -34,9 +34,16 @@ const NavigationBar = ({ isAdmin, onCreateProjectClick }) => {
         } md:translate-x-0 md:static md:h-auto md:flex md:w-full md:items-center md:justify-between md:px-6 md:py-4 md:shadow-md md:rounded-none`}
       >
         <div className="flex flex-col p-4 md:p-1 space-y-4 md:flex-row md:items-center md:space-y-0 md:space-x-6 w-full">
-          <span className="text-lg font-medium tracking-tight">
-            Welcome, {user?.name || "User"}
-          </span>
+          <div className="flex items-center gap-3">
+            <img
+              src="../../public/images/bug.gif"
+              alt="User Avatar"
+              className="w-8 h-8 rounded-full object-cover"
+            />
+            <span className="text-lg font-medium tracking-tight">
+              Welcome, {user?.name || "User"}
+            </span>
+          </div>
 
           <div className="md:ml-auto flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
             {isAdmin && (

@@ -81,9 +81,14 @@ const AdminDashboard = () => {
                   </h4>
                   <button
                     onClick={() => navigate(`/projects/${project._id}`)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-full font-medium hover:bg-blue-700 transition shadow-sm"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-full font-medium hover:bg-blue-700 transition shadow-sm flex items-center gap-2"
                   >
                     View Project
+                    <img
+                      src="../../public/images/menu-dots.png"
+                      alt="Arrow"
+                      className="w-4 h-4 object-contain"
+                    />
                   </button>
                 </li>
               ))}
@@ -117,9 +122,14 @@ const AdminDashboard = () => {
                   </h4>
                   <button
                     onClick={() => navigate(`/projects/${project._id}`)}
-                    className="bg-green-600 text-white px-4 py-2 rounded-full font-medium hover:bg-green-700 transition shadow-sm"
+                    className="bg-green-600 text-white px-4 py-2 rounded-full font-medium hover:bg-green-700 transition shadow-sm flex items-center gap-2"
                   >
                     View Project
+                    <img
+                      src="../../public/images/menu-dots.png"
+                      alt="Arrow"
+                      className="w-4 h-4 object-contain"
+                    />
                   </button>
                 </li>
               ))}
