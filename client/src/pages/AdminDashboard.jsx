@@ -21,9 +21,18 @@ const AdminDashboard = () => {
 
   const fetchProjects = async () => {
     try {
+      const token = localStorage.getItem("token");
+
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/projects/my-projects`
+        `${import.meta.env.VITE_API_URL}/api/projects/my-projects`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true, // only if your backend needs it (e.g. cookies/session)
+        }
       );
+
       setProjects(res.data);
     } catch (err) {
       console.error("Error fetching projects:", err);
