@@ -85,7 +85,7 @@ const AdminDashboard = () => {
                   >
                     View Project
                     <img
-                      src="../../public/images/menu-dots.png"
+                      src="/images/menu-dots.png"
                       alt="Arrow"
                       className="w-4 h-4 object-contain"
                     />
@@ -126,7 +126,7 @@ const AdminDashboard = () => {
                   >
                     View Project
                     <img
-                      src="../../public/images/menu-dots.png"
+                      src="/images/menu-dots.png"
                       alt="Arrow"
                       className="w-4 h-4 object-contain"
                     />
