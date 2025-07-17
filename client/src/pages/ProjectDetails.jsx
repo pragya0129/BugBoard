@@ -80,7 +80,7 @@ const ProjectDetails = () => {
 
       // Utility function to format date as YYYY-MM-DD
       const formatDateKey = (dateStr) =>
-        new Date(dateStr).toISOString().split("T")[0];
+        new Date(dateStr).toLocaleDateString("en-CA"); // Gives YYYY-MM-DD format in local time
 
       const trendMap = {};
 
@@ -267,7 +267,7 @@ const ProjectDetails = () => {
                         color: "#2e7d32",
                       },
                     ]}
-                    xAxis={[{ scaleType: "point", data: trendData.labels }]}
+                    xAxis={[{ scaleType: "band", data: trendData.labels }]}
                   />
                 </div>
               </div>
